@@ -24,21 +24,38 @@ This project demonstrates a modern data engineering architecture for processing 
 
 ```text
 Stock API
-    │
-    ▼
-Apache Kafka
-    │
-    ▼
+   │
+   ▼
+Kafka Producer
+   │
+   ▼
+Kafka Topic(s)
+   │
+   ▼
 Spark Structured Streaming
-    │
-    ▼
-PostgreSQL
-    │
-    ▼
+   │
+   ├──────────────┐
+   ▼              ▼
+PostgreSQL       S3
+   │
+   ▼
 FastAPI
-    │
-    ▼
+   │
+   ▼
 React Dashboard
+```
+
+### Data Flow
+
+1. **Stock API** provides real-time market data.
+2. **Kafka Producer** publishes stock events to Kafka topics.
+3. **Kafka Topics** act as the event streaming layer.
+4. **Spark Structured Streaming** consumes and processes events in real time.
+5. Processed data is stored in:
+   - **PostgreSQL** for analytics and API queries
+   - **Amazon S3** for historical storage and future data lake capabilities
+6. **FastAPI** exposes analytics and market insights through REST endpoints.
+7. **React Dashboard** visualizes real-time market activity, trends, and indicators.
 ```
 
 ---
