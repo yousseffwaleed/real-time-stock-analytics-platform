@@ -1,0 +1,31 @@
+# Python
+__pycache__/
+*.pyc
+venv/
+.env
+
+# Spark
+.metastore_db/
+spark-warehouse/
+
+# Node / React
+node_modules/
+build/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+
+# Logs
+*.log
+
+# Docker
+docker-data/
+
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.backup
