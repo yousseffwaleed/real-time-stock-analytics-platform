@@ -8,22 +8,34 @@ from dotenv import load_dotenv
 load_dotenv()
 
 api_key = os.getenv("FINNHUB_API_KEY")
-
-symbols = [
-    "AAPL",
-    "MSFT",
-    "NVDA",
-    "GOOGL",
-    "AMZN",
-    "META",
-    "TSLA",
-    "AMD",
-    "NFLX",
-    "PLTR"
-]
+exchange = os.getenv("FINNHUB_EXCHANGE", "US")
+symbol_limit = int(os.getenv("FINNHUB_SYMBOL_LIMIT", "25"))
 
 if not api_key:
     raise ValueError("FINNHUB_API_KEY is missing")
+
+
+def load_symbols():
+    response = requests.get(
+        "https://finnhub.io/api/v1/stock/symbol",
+        params={"exchange": exchange, "token": api_key},
+        timeout=10,
+    )
+    response.raise_for_status()
+    available_symbols = response.json()
+    symbols = [
+        item["symbol"]
+        for item in available_symbols
+        if item.get("symbol") and item.get("type") == "Common Stock"
+    ]
+    symbols = symbols[:symbol_limit]
+    if not symbols:
+        raise ValueError(f"No stock symbols returned for exchange {exchange}")
+    print(f"Loaded {len(symbols)} symbols from Finnhub ({exchange})")
+    return symbols
+
+
+symbols = load_symbols()
 
 producer = KafkaProducer(
     bootstrap_servers=["localhost:9092"],

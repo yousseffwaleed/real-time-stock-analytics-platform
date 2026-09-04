@@ -1,3 +1,7 @@
+:root { --ink: #17201e; --muted: #78807c; --line: #dfe4df; --paper: #fff; --bg: #f5f7f3; --orange: #ed6b3c; --orange-soft: #fff0e8; --green: #259d68; --red: #be463d; --display: Georgia, 'Times New Roman', serif; --sans: 'Trebuchet MS', Verdana, sans-serif; --mono: 'Courier New', monospace; font: 15px/1.45 var(--sans); color: var(--muted); background: var(--bg); font-synthesis: none; text-rendering: optimizeLegibility; -webkit-font-smoothing: antialiased; }
+#root { min-height: 100svh; }
+body { margin: 0; }
+*, *::before, *::after { box-sizing: border-box; }
 :root {
   --text: #6b6375;
   --text-h: #08060d;

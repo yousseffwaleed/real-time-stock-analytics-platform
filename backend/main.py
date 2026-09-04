@@ -1,8 +1,15 @@
-from fastapi import FastAPI, HTTPException
+import os
+
+import requests
+from dotenv import load_dotenv
+from fastapi import FastAPI, HTTPException, Query
 import psycopg2
 from fastapi.middleware.cors import CORSMiddleware
 
+load_dotenv()
+
 app = FastAPI()
+FINNHUB_API_KEY = os.getenv("FINNHUB_API_KEY")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:5173"],
@@ -28,6 +35,42 @@ def root():
 @app.get("/health")
 def health():
     return {"status": "healthy"}
+
+
+@app.get("/stocks/search")
+def search_stocks(query: str = Query(min_length=1, max_length=40)):
+    if not FINNHUB_API_KEY:
+        raise HTTPException(status_code=500, detail="FINNHUB_API_KEY is missing")
+
+    response = requests.get(
+        "https://finnhub.io/api/v1/search",
+        params={"q": query, "token": FINNHUB_API_KEY},
+        timeout=10,
+    )
+    response.raise_for_status()
+    return [
+        {"symbol": item["symbol"], "description": item.get("description", ""), "type": item.get("type", "")}
+        for item in response.json().get("result", [])[:10]
+    ]
+
+
+@app.get("/news")
+def market_news(symbol: str | None = Query(default=None, max_length=20)):
+    if not FINNHUB_API_KEY:
+        raise HTTPException(status_code=500, detail="FINNHUB_API_KEY is missing")
+
+    endpoint = "company-news" if symbol else "news"
+    params = {"token": FINNHUB_API_KEY}
+    if symbol:
+        from datetime import date, timedelta
+        today = date.today()
+        params.update({"symbol": symbol.upper(), "from": str(today - timedelta(days=7)), "to": str(today)})
+    else:
+        params["category"] = "general"
+
+    response = requests.get(f"https://finnhub.io/api/v1/{endpoint}", params=params, timeout=10)
+    response.raise_for_status()
+    return response.json()[:10]
 
 
 @app.get("/stocks/latest")

@@ -76,10 +76,98 @@ React Dashboard
 - PostgreSQL
 
 ### Frontend
-- React
+- React (Vite, TypeScript)
 
 ### Infrastructure
-- Docker
+- Docker & Docker Compose
+
+---
+
+## ⚡ Getting Started: Clone & Run
+
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/<your-username>/real-time-stock-analytics-platform.git
+cd real-time-stock-analytics-platform
+```
+
+---
+
+### 2. Configure Environment Variables
+
+Create a `.env` file in the root directory:
+
+```env
+FINNHUB_API_KEY=your_finnhub_api_key_here
+FINNHUB_EXCHANGE=US
+FINNHUB_SYMBOL_LIMIT=25
+```
+
+---
+
+### 3. Start Infrastructure (PostgreSQL & Kafka)
+
+Make sure Docker Desktop is running, then start the containers:
+
+```bash
+docker compose up -d postgres kafka
+```
+
+---
+
+### 4. Setup & Run the Backend API
+
+Open a terminal in the root directory:
+
+```powershell
+# 1. Create and activate a Python virtual environment (recommended)
+python -m venv .venv
+.venv\Scripts\Activate.ps1
+
+# 2. Install dependencies
+pip install -r backend/requirements.txt
+
+# 3. Start the FastAPI backend server
+python -m uvicorn backend.main:app --reload --host 0.0.0.0 --port 8000
+```
+
+- **Backend API**: [http://localhost:8000](http://localhost:8000)
+- **Interactive Swagger Docs**: [http://localhost:8000/docs](http://localhost:8000/docs)
+
+---
+
+### 5. Start Data Ingestion Pipeline (Consumer & Producer)
+
+Open two separate terminals to stream live stock data into Kafka and PostgreSQL:
+
+- **Terminal 1 (Kafka Consumer -> PostgreSQL):**
+  ```powershell
+  python consumer/main.py
+  ```
+
+- **Terminal 2 (Finnhub Producer -> Kafka):**
+  ```powershell
+  python producer/main.py
+  ```
+
+---
+
+### 6. Setup & Run the Frontend Dashboard
+
+Open another terminal in the frontend directory:
+
+```powershell
+cd frontend
+
+# 1. Install Node dependencies
+npm install
+
+# 2. Start the Vite development server
+npm run dev
+```
+
+- **Market Pulse Dashboard**: [http://localhost:5173](http://localhost:5173)
 
 ---
 
